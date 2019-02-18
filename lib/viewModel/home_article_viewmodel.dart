@@ -30,4 +30,9 @@ class HomeArticleViewModel {
     _homeArticlesController.close();
     _subscription.clear();
   }
+
+  //清除列表
+  cleanList(){
+    homeArticles.clear();
+  }
 }

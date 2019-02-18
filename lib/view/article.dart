@@ -3,6 +3,7 @@ import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/view/article_detail.dart';
 import 'package:wanandroid/viewModel/home_article_viewmodel.dart';
 import 'package:wanandroid/widget/recycle_view.dart';
+import 'package:wanandroid/res/constant.dart';
 
 class ArticlePage extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   //初始页数从0开始.
   static const int _initPageCount = 0;
 
-  List<HomeArticleEntity> lists;
+  List<HomeArticleEntity> lists = [];
   HomeArticleViewModel _viewModel = HomeArticleViewModel();
   int _currentPage = _initPageCount;
 
@@ -51,8 +52,7 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
     return StreamBuilder(
       stream: _viewModel.articles,
       builder: (context, snap) {
-        lists = snap.data;
-        print("data length===${lists == null ? 0 : lists.length}");
+        lists = snap.data != null ? snap.data : [];
         return Scaffold(
           body: RecycleView<HomeArticleEntity>(
             lists: lists,
@@ -74,7 +74,7 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   Widget _createBuilder(BuildContext context, int index) {
     if (index == 0) {
       return Container(
-        height: 200,
+        height: 200.0,
         color: Colors.red,
       );
     } else {
@@ -82,74 +82,83 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
       return GestureDetector(
           onTap: () => _itemClicked(index),
           child: Card(
-            elevation: 5,
+            elevation: Values.card_elevation,
             child: Container(
                 child: Container(
-              padding: EdgeInsets.only(left: 7, right: 7),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      flex: 7,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(6),
-                          ),
-                          Text(
-                            article.articleTitle,
-                            softWrap: true,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 17.0),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 5),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                  padding: EdgeInsets.only(left: Values.horizontal_padding,
+                      right: Values.horizontal_padding),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                          flex: 7,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              RichText(
-                                  text: TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: "作者:  ",
-                                      style:
-                                          DefaultTextStyle.of(context).style),
-                                  TextSpan(
-                                      text: article.author,
-                                      style: TextStyle(
-                                          color: Colors.red, fontSize: 15.0))
-                                ],
-                              )),
-                              RichText(
-                                text: TextSpan(
-                                  text: "发布时间:  ",
-                                  style: DefaultTextStyle.of(context).style,
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: article.times,
-                                        style: TextStyle(color: Colors.black))
-                                  ],
-                                ),
+                              Padding(
+                                padding: EdgeInsets.all(6.0),
                               ),
+                              Text(
+                                article.articleTitle,
+                                softWrap: true,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: Values.title_font_size),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.0),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                              text: "作者:  ",
+                                              style:
+                                              DefaultTextStyle
+                                                  .of(context)
+                                                  .style),
+                                          TextSpan(
+                                              text: article.author,
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 15.0))
+                                        ],
+                                      )),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: "发布时间:  ",
+                                      style: DefaultTextStyle
+                                          .of(context)
+                                          .style,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: article.times,
+                                            style: TextStyle(
+                                                color: Colors.black))
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(padding: EdgeInsets.all(5.0))
                             ],
-                          ),
-                          Padding(padding: EdgeInsets.all(5))
-                        ],
-                      )),
-                  Expanded(
-                    flex: 1,
-                    child: IconButton(
-                      icon: Icon(Icons.favorite_border),
-                      color: article.collect ? Colors.red : Colors.black,
-                      onPressed: () => _collect(article.courseId, index),
-                    ),
-                  )
-                ],
-              ),
-            )),
+                          )),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          icon: Icon(Icons.favorite_border),
+                          color: article.collect ? Colors.red : Colors.black,
+                          onPressed: () => _collect(article.courseId, index),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
           ));
     }
   }
@@ -165,16 +174,16 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
     var urls = lists[index].link;
     Navigator.push(context,
         new MaterialPageRoute(builder: (BuildContext context) {
-      return ArticleDetail(
-        detailUrl: urls,
-        articleTitle: title,
-      );
-    }));
+          return ArticleDetail(
+            detailUrl: urls,
+            articleTitle: title,
+          );
+        }));
   }
 
   _loadData(int currentPage) async {
     if (currentPage == _initPageCount && lists.isNotEmpty) {
-      lists.clear();
+      _viewModel.cleanList();
     }
     await _viewModel.getArticles(currentPage);
   }

@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:wanandroid/view/article.dart';
 import 'package:wanandroid/view/dialog_test.dart';
 import 'package:wanandroid/view/list_test.dart';
+import 'package:wanandroid/view/find.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -23,12 +24,12 @@ class _MyHome extends State<_MyHomePage> {
   var _navigationBars = [
     new BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("123")),
     new BottomNavigationBarItem(
-        icon: Icon(Icons.account_box), title: Text("333")),
+        icon: Icon(Icons.event_note), title: Text("333")),
     new BottomNavigationBarItem(
         icon: Icon(Icons.cast_connected), title: Text("333")),
   ];
 
-  final _pageView = [ArticlePage(), Dialogg(), ListTest()];
+  final _pageView = [ArticlePage(), FindPage(), ListTest()];
 
   PageController _pageController = PageController(initialPage: 0);
 

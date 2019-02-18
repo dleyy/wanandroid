@@ -15,8 +15,8 @@ class RecycleView<T> extends StatefulWidget {
       @required this.lists,
       this.loadMore,
       this.refresh,
-      this.listBuilder,
-      this.itemCount})
+      @required this.listBuilder,
+      @required this.itemCount})
       : super(key: key);
 
   @override
@@ -75,8 +75,6 @@ class _Recycle extends State<RecycleView> {
 
   @override
   Widget build(BuildContext context) {
-    int _itemCount =
-        widget.itemCount > 0 ? widget.itemCount + 1 : widget.lists.length + 1;
     if (widget.lists == null || widget.lists.isEmpty) {
       return Container(
         width: MediaQuery.of(context).size.width,
@@ -86,6 +84,8 @@ class _Recycle extends State<RecycleView> {
         ),
       );
     } else {
+      int _itemCount =
+      widget.itemCount > 0 ? widget.itemCount + 1 : widget.lists.length + 1;
       return RefreshIndicator(
         onRefresh: () async {
           await _refresh();

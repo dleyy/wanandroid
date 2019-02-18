@@ -16,7 +16,7 @@ class _List extends State<ListTest> with SingleTickerProviderStateMixin {
     items = [
       GestureDetector(
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(10.0),
           child: Text("333"),
         ),
         onTap: () {
