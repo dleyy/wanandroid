@@ -4,7 +4,7 @@ import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/net/api/ApiRepository.dart';
 import 'package:wanandroid/viewModel/base_viewmodel.dart';
 
-class HomeArticleViewModel extends BaseViewModel {
+class FindDetailViewModel extends BaseViewModel {
 
   List<HomeArticleEntity> _homeArticles;
   StreamController<List<HomeArticleEntity>> _homeArticlesController;
@@ -17,9 +17,9 @@ class HomeArticleViewModel extends BaseViewModel {
   Stream<List<HomeArticleEntity>> get articles =>
       _homeArticlesController.stream;
 
-  getArticles(int currentPage) async {
+  getArticles(int currentPage, String cid) async {
     StreamSubscription subscription =
-        ApiRepository().getHomeArticle(currentPage).listen((lists) {
+    ApiRepository().getFindDetailArticle(currentPage, cid).listen((lists) {
       if (lists != null) _homeArticles.addAll(lists);
       _homeArticlesController.sink.add(_homeArticles);
     });
@@ -27,7 +27,7 @@ class HomeArticleViewModel extends BaseViewModel {
   }
 
   //清除列表
-  cleanList(){
+  cleanList() {
     _homeArticles.clear();
   }
 
