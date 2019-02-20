@@ -20,7 +20,8 @@ class FindList extends StatefulWidget {
 
 }
 
-class _DetailList extends State<FindList> with SingleTickerProviderStateMixin {
+class _DetailList extends State<FindList> with
+    SingleTickerProviderStateMixin{
   TabController _controller;
   var _tabs = <Widget>[];
   var _tabView = <Widget>[];
@@ -68,13 +69,22 @@ class _FindRecycle extends StatefulWidget {
 
 }
 
-class _FindContent extends State<_FindRecycle> {
+class _FindContent extends State<_FindRecycle> with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
 
   var _findViewModel = FindDetailViewModel();
   static const int _initPage = 0;
   int _currentPage = _initPage;
   List<HomeArticleEntity> _list = new List();
 
+
+  @override
+  void dispose() {
+    _findViewModel.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -87,7 +97,7 @@ class _FindContent extends State<_FindRecycle> {
     return new StreamBuilder(
       stream: _findViewModel.articles,
       builder: (context, snap) {
-        _list = snap.data!=null?snap.data:[];
+        _list = snap.data != null ? snap.data : [];
         return RecycleView<HomeArticleEntity>(
           lists: _list,
           loadMore: () {
@@ -97,7 +107,7 @@ class _FindContent extends State<_FindRecycle> {
             _currentPage = _initPage;
             _loadData(_currentPage);
           },
-          itemCount: _list.length + 1,
+          itemCount: _list.length,
           listBuilder: _createBuilder,
         );
       },
@@ -105,88 +115,90 @@ class _FindContent extends State<_FindRecycle> {
   }
 
   Widget _createBuilder(BuildContext context, int index) {
-      HomeArticleEntity article = _list[index];
-      return GestureDetector(
-          onTap: () => _itemClicked(index),
-          child: Card(
-            elevation: Values.card_elevation,
-            child: Container(
-                child: Container(
-                  padding: EdgeInsets.only(left: Values.horizontal_padding,
-                      right: Values.horizontal_padding),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                          flex: 7,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(6.0),
-                              ),
-                              Text(
-                                article.articleTitle,
-                                softWrap: true,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: Values.title_font_size),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 5.0),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  RichText(
-                                      text: TextSpan(
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: "作者:  ",
-                                              style:
-                                              DefaultTextStyle
-                                                  .of(context)
-                                                  .style),
-                                          TextSpan(
-                                              text: article.author,
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 15.0))
-                                        ],
-                                      )),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: "发布时间:  ",
-                                      style: DefaultTextStyle
-                                          .of(context)
-                                          .style,
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                            text: article.times,
-                                            style: TextStyle(
-                                                color: Colors.black))
-                                      ],
-                                    ),
+    HomeArticleEntity article = _list[index];
+    return GestureDetector(
+        onTap: () => _itemClicked(index),
+        child: Card(
+          elevation: Values.card_elevation,
+          child: Container(
+              child: Container(
+                padding: EdgeInsets.only(left: Values.horizontal_padding,
+                    right: Values.horizontal_padding),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                        flex: 7,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.all(6.0),
+                            ),
+                            Text(
+                              article.articleTitle,
+                              softWrap: true,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: Values.title_font_size),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 5.0),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                new Expanded(
+                                    child: RichText(
+                                        text: TextSpan(
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: "作者:  ",
+                                                style:
+                                                DefaultTextStyle
+                                                    .of(context)
+                                                    .style),
+                                            TextSpan(
+                                                text: article.author,
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 15.0))
+                                          ],
+                                        )),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: "发布时间:  ",
+                                    style: DefaultTextStyle
+                                        .of(context)
+                                        .style,
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: article.times,
+                                          style: TextStyle(
+                                              color: Colors.black))
+                                    ],
                                   ),
-                                ],
-                              ),
-                              Padding(padding: EdgeInsets.all(5.0))
-                            ],
-                          )),
-                      Expanded(
-                        flex: 1,
-                        child: IconButton(
-                          icon: Icon(Icons.favorite_border),
-                          color: article.collect ? Colors.red : Colors.black,
-                          onPressed: () => _collect(article.courseId, index),
-                        ),
-                      )
-                    ],
-                  ),
-                )),
-          ));
+                                ),
+                              ],
+                            ),
+                            Padding(padding: EdgeInsets.all(5.0))
+                          ],
+                        )),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        icon: Icon(Icons.favorite_border),
+                        color: article.collect ? Colors.red : Colors.black,
+                        onPressed: () => _collect(article.courseId, index),
+                      ),
+                    )
+                  ],
+                ),
+              )),
+        ));
   }
 
   _collect(int courseId, int index) {
@@ -211,7 +223,7 @@ class _FindContent extends State<_FindRecycle> {
     if (currentPage == _initPage && _list.isNotEmpty) {
       _findViewModel.cleanList();
     }
-    await _findViewModel.getArticles(_currentPage,widget.id);
+    await _findViewModel.getArticles(_currentPage, widget.id);
   }
 
 }

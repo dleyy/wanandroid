@@ -6,34 +6,34 @@ import 'package:wanandroid/viewModel/base_viewmodel.dart';
 
 class FindDetailViewModel extends BaseViewModel {
 
-  List<HomeArticleEntity> _homeArticles;
-  StreamController<List<HomeArticleEntity>> _homeArticlesController;
+  List<HomeArticleEntity> _detailArticles;
+  StreamController<List<HomeArticleEntity>> _detailArticleController;
 
-  HomeArticleViewModel() {
-    _homeArticles = [];
-    _homeArticlesController = StreamController<List<HomeArticleEntity>>();
+  FindDetailViewModel() {
+    _detailArticles = [];
+    _detailArticleController = new StreamController<List<HomeArticleEntity>>();
   }
 
   Stream<List<HomeArticleEntity>> get articles =>
-      _homeArticlesController.stream;
+      _detailArticleController.stream;
 
   getArticles(int currentPage, String cid) async {
     StreamSubscription subscription =
     ApiRepository().getFindDetailArticle(currentPage, cid).listen((lists) {
-      if (lists != null) _homeArticles.addAll(lists);
-      _homeArticlesController.sink.add(_homeArticles);
+      if (lists != null) _detailArticles.addAll(lists);
+      _detailArticleController.sink.add(_detailArticles);
     });
     subscriptions.add(subscription);
   }
 
   //清除列表
   cleanList() {
-    _homeArticles.clear();
+    _detailArticles.clear();
   }
 
   @override
   dispose() {
-    _homeArticles.clear();
+    _detailArticles.clear();
     super.dispose();
   }
 }

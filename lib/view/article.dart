@@ -78,9 +78,9 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
         color: Colors.red,
       );
     } else {
-      HomeArticleEntity article = lists[index - 1];
+      HomeArticleEntity article = lists[_getRealIndex(index)];
       return GestureDetector(
-          onTap: () => _itemClicked(index),
+          onTap: () => _itemClicked(_getRealIndex(index)),
           child: Card(
             elevation: Values.card_elevation,
             child: Container(
@@ -113,22 +113,24 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
                                     .spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  RichText(
-                                      text: TextSpan(
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: "作者:  ",
-                                              style:
-                                              DefaultTextStyle
-                                                  .of(context)
-                                                  .style),
-                                          TextSpan(
-                                              text: article.author,
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 15.0))
-                                        ],
-                                      )),
+                                  new Expanded(
+                                    child: new RichText(
+                                        text: TextSpan(
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: "作者:  ",
+                                                style:
+                                                DefaultTextStyle
+                                                    .of(context)
+                                                    .style),
+                                            TextSpan(
+                                                text: article.author,
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 15.0))
+                                          ],
+                                        )),
+                                  ),
                                   RichText(
                                     text: TextSpan(
                                       text: "发布时间:  ",
@@ -153,7 +155,7 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
                         child: IconButton(
                           icon: Icon(Icons.favorite_border),
                           color: article.collect ? Colors.red : Colors.black,
-                          onPressed: () => _collect(article.courseId, index),
+                          onPressed: () => _collect(article.courseId, _getRealIndex(index)),
                         ),
                       )
                     ],
@@ -186,5 +188,9 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
       _viewModel.cleanList();
     }
     await _viewModel.getArticles(currentPage);
+  }
+
+  int _getRealIndex(int index) {
+    return index - 1;
   }
 }
