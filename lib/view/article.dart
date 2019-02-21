@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/view/article_detail.dart';
+import 'package:wanandroid/viewModel/banner_viewmodel.dart';
 import 'package:wanandroid/viewModel/home_article_viewmodel.dart';
 import 'package:wanandroid/widget/recycle_view.dart';
 import 'package:wanandroid/res/constant.dart';
+import 'package:wanandroid/widget/cycle_view.dart';
+import 'package:wanandroid/entity/banner_entity.dart';
 
 class ArticlePage extends StatefulWidget {
   @override
@@ -18,7 +21,9 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   static const int _initPageCount = 0;
 
   List<HomeArticleEntity> lists = [];
+  List<BannerEntity> banners = [];
   HomeArticleViewModel _viewModel = HomeArticleViewModel();
+  BannerViewModel _bannerViewModel;
   int _currentPage = _initPageCount;
 
   ScrollController _scrollController = new ScrollController();
@@ -39,11 +44,17 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
     });
     super.initState();
     _viewModel.getArticles(_currentPage);
+    _bannerViewModel = BannerViewModel(
+            (list) {
+          _buildBanner(list);
+        });
+    _bannerViewModel.getBanners();
   }
 
   @override
   void dispose() {
     _viewModel.dispose();
+    _bannerViewModel.dispose();
     super.dispose();
   }
 
@@ -73,9 +84,20 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
 
   Widget _createBuilder(BuildContext context, int index) {
     if (index == 0) {
+      List<CycleImageEntity> imgs = new List();
+      if(banners!=null){
+        for(BannerEntity banner in banners){
+            CycleImageEntity entity = new CycleImageEntity();
+            entity.cycleContent = banner.title;
+            entity.imageUrl = banner.imgUrl;
+            imgs.add(entity);
+        }
+      }
       return Container(
         height: 200.0,
-        color: Colors.red,
+        child: CycleView(imgs, onPageClicked: (index) {
+          print(imgs[index].cycleContent);
+        }, autoScroll: true,),
       );
     } else {
       HomeArticleEntity article = lists[_getRealIndex(index)];
@@ -155,7 +177,8 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
                         child: IconButton(
                           icon: Icon(Icons.favorite_border),
                           color: article.collect ? Colors.red : Colors.black,
-                          onPressed: () => _collect(article.courseId, _getRealIndex(index)),
+                          onPressed: () =>
+                              _collect(article.courseId, _getRealIndex(index)),
                         ),
                       )
                     ],
@@ -163,6 +186,12 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
                 )),
           ));
     }
+  }
+
+  _buildBanner(List<BannerEntity> list) {
+    setState(() {
+      banners = list;
+    });
   }
 
   _collect(int courseId, int index) {

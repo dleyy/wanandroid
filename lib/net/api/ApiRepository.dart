@@ -3,6 +3,9 @@ import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/model/home_article.dart';
 import 'package:wanandroid/model/find_response.dart';
 import 'package:wanandroid/entity/find_entity.dart';
+import 'package:wanandroid/entity/banner_entity.dart';
+import 'package:wanandroid/model/banner_response.dart';
+import 'package:wanandroid/entity/home_page_entity.dart';
 import 'ApiProvider.dart';
 
 class ApiRepository {
@@ -32,25 +35,42 @@ class ApiRepository {
         .flatMap(_articleToEntity);
   }
 
+  // 首页banner
+  Observable<List<BannerEntity>> getBanner() {
+    return Observable.fromFuture(
+        _apiProvider.getBanner()
+    ).flatMap(_bannerToEntity);
+  }
+
+  //整合的首页数据---暂未使用
+  Observable<HomePageEntity> getHomeDates(int currentPage){
+    return Observable.zip2(getBanner(), getHomeArticle(currentPage),
+    (one,two){
+      HomePageEntity entity = new HomePageEntity();
+      entity.banners = one;
+      entity.articles = two;
+      return entity;
+    });
+  }
+
+  //发现页面
   Observable<List<FindEntity>> _findToEntity(finds) {
     List<FindEntity> list = [];
-    if (finds == null) {
-      return Observable.just(list);
-    } else {
+    if (finds == null) {} else {
       if (finds is FindResponse) {
         for (var _find in finds.data) {
           FindEntity entity = new FindEntity();
           entity.channelId = _find.id.toString();
           entity.channelName = _find.name;
-          entity.children = childrenToEntity(_find.children);
+          entity.children = _childrenToEntity(_find.children);
           list.add(entity);
         }
-        return Observable.just(list);
       }
     }
+    return Observable.just(list);
   }
 
-  childrenToEntity(List<Children> findChildren) {
+  _childrenToEntity(List<Children> findChildren) {
     List<FindEntity> children = [];
     for (var child in findChildren) {
       FindEntity entity = new FindEntity();
@@ -65,7 +85,7 @@ class ApiRepository {
   Observable<List<HomeArticleEntity>> _articleToEntity(article) {
     List<HomeArticleEntity> lists = [];
     if (article == null) {
-      return Observable.just(lists);
+
     } else if (article is HomeArticle) {
       for (var _ in article.data.datas) {
         HomeArticleEntity entity = new HomeArticleEntity();
@@ -79,9 +99,23 @@ class ApiRepository {
         entity.link = _.link;
         lists.add(entity);
       }
-      return Observable.just(lists);
     }
+    return Observable.just(lists);
+  }
 
-    return Observable.just(null);
+  Observable<List<BannerEntity>> _bannerToEntity(banner) {
+    List<BannerEntity> banners = new List();
+    if (banner == null) {
+
+    } else if (banner is BannerResponse) {
+      for (var item in banner.data) {
+        BannerEntity entity = new BannerEntity();
+        entity.articleUrl = item.url;
+        entity.title = item.title;
+        entity.imgUrl = item.imagePath;
+        banners.add(entity);
+      }
+    }
+    return Observable.just(banners);
   }
 }
