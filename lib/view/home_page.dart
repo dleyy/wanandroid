@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:wanandroid/view/article.dart';
 import 'package:wanandroid/view/list_test.dart';
 import 'package:wanandroid/view/find.dart';
+import 'mine.dart';
 import 'package:wanandroid/res/constant.dart';
 import 'search.dart';
 
@@ -36,7 +37,7 @@ class _MyHome extends State<_MyHomePage> {
         backgroundColor: Colors.black),
   ];
 
-  final _pageView = [ArticlePage(), FindPage(), AnimatedListSample()];
+  final _pageView = [ArticlePage(), FindPage(), MinePage()];
 
   PageController _pageController = PageController(initialPage: 0);
 
