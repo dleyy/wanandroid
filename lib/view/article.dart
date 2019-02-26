@@ -86,18 +86,23 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   Widget _createBuilder(BuildContext context, int index) {
     if (index == 0) {
       List<CycleImageEntity> imgs = new List();
-      if(banners!=null){
-        for(BannerEntity banner in banners){
-            CycleImageEntity entity = new CycleImageEntity();
-            entity.cycleContent = banner.title;
-            entity.imageUrl = banner.imgUrl;
-            imgs.add(entity);
+      if (banners != null) {
+        for (BannerEntity banner in banners) {
+          CycleImageEntity entity = new CycleImageEntity();
+          entity.cycleContent = banner.title;
+          entity.imageUrl = banner.imgUrl;
+          imgs.add(entity);
         }
       }
       return Container(
         height: 200.0,
         child: CycleView(imgs, onPageClicked: (index) {
-          print(imgs[index].cycleContent);
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (buildContext) =>
+                  ArticleDetail(
+                    detailUrl: banners[index].articleUrl,
+                    articleTitle: banners[index].title,
+                  )));
         }, autoScroll: true,),
       );
     } else {
