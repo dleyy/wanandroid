@@ -57,7 +57,7 @@ class _WebArticle extends State<ArticleDetail> {
     List<Widget> titleContent = [];
     titleContent.add(new Text(
       title,
-      style: new TextStyle(color: Colors.white),
+      style: new TextStyle(color: Colors.black),
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
     ));
@@ -70,11 +70,12 @@ class _WebArticle extends State<ArticleDetail> {
       key: _scaffoldKey,
       url: widget.detailUrl,
       appBar: new AppBar(
+
         title: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: titleContent,
         ),
-        iconTheme: new IconThemeData(color: Colors.white),
+        iconTheme: new IconThemeData(color: Colors.black),
       ),
       withZoom: true,
       // 允许网页缩放

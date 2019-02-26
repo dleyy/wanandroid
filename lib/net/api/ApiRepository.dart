@@ -6,7 +6,10 @@ import 'package:wanandroid/entity/find_entity.dart';
 import 'package:wanandroid/entity/banner_entity.dart';
 import 'package:wanandroid/model/banner_response.dart';
 import 'package:wanandroid/entity/home_page_entity.dart';
+import 'package:wanandroid/entity/hot_key_entity.dart';
+import 'package:wanandroid/model/groom_response.dart';
 import 'ApiProvider.dart';
+
 
 class ApiRepository {
   ApiProvider _apiProvider;
@@ -43,14 +46,14 @@ class ApiRepository {
   }
 
   //整合的首页数据---暂未使用
-  Observable<HomePageEntity> getHomeDates(int currentPage){
+  Observable<HomePageEntity> getHomeDates(int currentPage) {
     return Observable.zip2(getBanner(), getHomeArticle(currentPage),
-    (one,two){
-      HomePageEntity entity = new HomePageEntity();
-      entity.banners = one;
-      entity.articles = two;
-      return entity;
-    });
+            (one, two) {
+          HomePageEntity entity = new HomePageEntity();
+          entity.banners = one;
+          entity.articles = two;
+          return entity;
+        });
   }
 
   //发现页面
@@ -68,6 +71,20 @@ class ApiRepository {
       }
     }
     return Observable.just(list);
+  }
+
+  //获取搜索热词
+  Observable<List<HotKeyEntity>> getHotKey() {
+    return Observable.fromFuture(_apiProvider.getGroom())
+        .flatMap(_hotKeyToEntity);
+  }
+
+  //获取搜索结果
+  Observable<List<HomeArticleEntity>> getSearchResult(int currentPage,
+      String keywords) {
+    return Observable.fromFuture(
+        _apiProvider.getSearchArticle(currentPage, keywords))
+        .flatMap(_articleToEntity);
   }
 
   _childrenToEntity(List<Children> findChildren) {
@@ -117,5 +134,18 @@ class ApiRepository {
       }
     }
     return Observable.just(banners);
+  }
+
+  Observable<List<HotKeyEntity>> _hotKeyToEntity(value) {
+    List<HotKeyEntity> list = new List();
+    if (value != null && value is GroomResponse) {
+      for (var item in value.data) {
+        HotKeyEntity entity = new HotKeyEntity();
+        entity.name = item.name;
+        entity.id = item.id;
+        list.add(entity);
+      }
+    }
+    return Observable.just(list);
   }
 }

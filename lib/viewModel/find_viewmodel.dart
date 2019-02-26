@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'base_viewmodel.dart';
 import 'package:wanandroid/entity/find_entity.dart';
-import 'package:wanandroid/net/api/ApiRepository.dart';
 
 
 class FindViewModel extends BaseViewModel {
@@ -19,8 +18,8 @@ class FindViewModel extends BaseViewModel {
 
   //获取分类信息
   getFindData() async {
-    StreamSubscription subscription =
-    ApiRepository().getHomeFind().listen((lists) {
+    subscription =
+    repository.getHomeFind().listen((lists) {
       if (lists != null) _findData.addAll(lists);
       _findController.sink.add(_findData);
     });

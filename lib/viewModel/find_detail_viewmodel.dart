@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:wanandroid/entity/home_article_entity.dart';
-import 'package:wanandroid/net/api/ApiRepository.dart';
 import 'package:wanandroid/viewModel/base_viewmodel.dart';
 
 class FindDetailViewModel extends BaseViewModel {
@@ -18,11 +16,11 @@ class FindDetailViewModel extends BaseViewModel {
       _detailArticleController.stream;
 
   getArticles(int currentPage, String cid) async {
-    StreamSubscription subscription =
-    ApiRepository().getFindDetailArticle(currentPage, cid).listen((lists) {
-      if (lists != null) _detailArticles.addAll(lists);
-      _detailArticleController.sink.add(_detailArticles);
-    });
+    subscription =
+        repository.getFindDetailArticle(currentPage, cid).listen((lists) {
+          if (lists != null) _detailArticles.addAll(lists);
+          _detailArticleController.sink.add(_detailArticles);
+        });
     subscriptions.add(subscription);
   }
 

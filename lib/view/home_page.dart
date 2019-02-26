@@ -3,12 +3,15 @@ import 'package:wanandroid/view/article.dart';
 import 'package:wanandroid/view/list_test.dart';
 import 'package:wanandroid/view/find.dart';
 import 'package:wanandroid/res/constant.dart';
+import 'search.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(),
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
       home: _MyHomePage(),
     );
   }
@@ -22,14 +25,18 @@ class _MyHomePage extends StatefulWidget {
 class _MyHome extends State<_MyHomePage> {
   int _currentIndex = 0;
   var _navigationBars = [
-    new BottomNavigationBarItem(icon: Icon(Icons.home), title: Text(Strings.home_tab)),
     new BottomNavigationBarItem(
-        icon: Icon(Icons.event_note), title: Text(Strings.find_tab)),
+        icon: Icon(Icons.home), title: Text(Strings.home_tab),
+        backgroundColor: Colors.black),
     new BottomNavigationBarItem(
-        icon: Icon(Icons.cast_connected), title: Text(Strings.mine_tab)),
+        icon: Icon(Icons.event_note), title: Text(Strings.find_tab),
+        backgroundColor: Colors.black),
+    new BottomNavigationBarItem(
+        icon: Icon(Icons.person), title: Text(Strings.mine_tab),
+        backgroundColor: Colors.black),
   ];
 
-  final _pageView = [ArticlePage(), FindPage(), ListTest()];
+  final _pageView = [ArticlePage(), FindPage(), AnimatedListSample()];
 
   PageController _pageController = PageController(initialPage: 0);
 
@@ -44,6 +51,10 @@ class _MyHome extends State<_MyHomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("wanandroid"),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.search),
+              onPressed: () => _openSearch())
+        ],
       ),
       body: PageView.builder(
         itemBuilder: (context, index) {
@@ -60,9 +71,15 @@ class _MyHome extends State<_MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: _navigationBars,
         currentIndex: _currentIndex,
+        fixedColor: Colors.blue,
         onTap: _bottomClicked,
       ),
     );
+  }
+
+  _openSearch() {
+    Navigator.of(context).push(new MaterialPageRoute
+      (builder: (context) => SearchPage()));
   }
 
   _bottomClicked(int index) {

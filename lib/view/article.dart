@@ -7,6 +7,7 @@ import 'package:wanandroid/widget/recycle_view.dart';
 import 'package:wanandroid/res/constant.dart';
 import 'package:wanandroid/widget/cycle_view.dart';
 import 'package:wanandroid/entity/banner_entity.dart';
+import 'common_article_list.dart';
 
 class ArticlePage extends StatefulWidget {
   @override

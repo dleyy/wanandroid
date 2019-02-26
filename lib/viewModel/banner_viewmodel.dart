@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'base_viewmodel.dart';
-import 'package:wanandroid/net/api/ApiRepository.dart';
 
 
-class BannerViewModel extends BaseViewModel{
+class BannerViewModel extends BaseViewModel {
 
   //完成后回调.
   Function onBannerLoadSuccess;
@@ -17,9 +14,9 @@ class BannerViewModel extends BaseViewModel{
   }
 
   getBanners() {
-    StreamSubscription subscription = ApiRepository().getBanner()
-    .listen((value){
-      if(onBannerLoadSuccess!=null){
+    subscription = repository.getBanner()
+        .listen((value) {
+      if (onBannerLoadSuccess != null) {
         onBannerLoadSuccess(value);
       }
     });

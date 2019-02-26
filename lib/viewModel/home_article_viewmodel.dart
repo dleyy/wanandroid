@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:wanandroid/entity/home_article_entity.dart';
-import 'package:wanandroid/net/api/ApiRepository.dart';
 import 'package:wanandroid/viewModel/base_viewmodel.dart';
 
 class HomeArticleViewModel extends BaseViewModel {
@@ -18,8 +17,8 @@ class HomeArticleViewModel extends BaseViewModel {
       _homeArticlesController.stream;
 
   getArticles(int currentPage) async {
-    StreamSubscription subscription =
-        ApiRepository().getHomeArticle(currentPage).listen((lists) {
+    subscription =
+        repository.getHomeArticle(currentPage).listen((lists) {
       if (lists != null) _homeArticles.addAll(lists);
       _homeArticlesController.sink.add(_homeArticles);
     });
