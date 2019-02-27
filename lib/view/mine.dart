@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 class MinePage extends StatefulWidget {
 
@@ -59,7 +60,6 @@ class _MineState extends State<MinePage> {
                                   fontSize: 15.0))
                         ],
                       )),
-
                 ],
               ),
             )
@@ -91,6 +91,7 @@ class _MineState extends State<MinePage> {
   }
 
   _goToLogin() {
-    print("_login");
+    Navigator.of(context)
+        .push(new MaterialPageRoute(builder: (context)=>Login()));
   }
 }

@@ -5,6 +5,7 @@ import 'package:wanandroid/model/home_article.dart';
 import 'package:wanandroid/model/find_response.dart';
 import 'package:wanandroid/model/banner_response.dart';
 import 'package:wanandroid/model/groom_response.dart';
+import 'package:wanandroid/model/user_response.dart';
 
 
 class ApiProvider {
@@ -15,14 +16,17 @@ class ApiProvider {
   static const String _bannerUrl = "/banner/json";
   static const String _groomUrl = "/hotkey/json";
   static const String _searchUrl = "/article/query/%d/json";
+  static const String _loginUrl = "/user/login";
+  static const String _registerUrl = "/user/register";
+  static const String _logoutUrl = "/user/logout/json";
   static const String TAG = "dio========";
 
   Dio _dio;
 
   ApiProvider() {
-
     Options options = new Options(
-        baseUrl: _baseUrl
+      baseUrl: _baseUrl,
+
     );
 
     _dio = Dio(options);
@@ -91,4 +95,18 @@ class ApiProvider {
     HomeArticle article = HomeArticle.fromJson(response.data);
     return article;
   }
+
+
+  doLogin(String userName, String password) async {
+    FormData data = new FormData();
+    data.add("username", userName);
+    data.add("password", password);
+    var response = await _dio.post(_loginUrl, data: data);
+    List<String> cookie = response.headers["set-cookie"];
+    print("cookies======${cookie.length}====${cookie[0]}");
+
+    UserResponse userResponse = UserResponse.fromJson(response.data);
+    return userResponse;
+  }
+
 }

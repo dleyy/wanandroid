@@ -8,6 +8,8 @@ import 'package:wanandroid/model/banner_response.dart';
 import 'package:wanandroid/entity/home_page_entity.dart';
 import 'package:wanandroid/entity/hot_key_entity.dart';
 import 'package:wanandroid/model/groom_response.dart';
+import 'package:wanandroid/entity/login_entity.dart';
+import 'package:wanandroid/model/user_response.dart';
 import 'ApiProvider.dart';
 
 
@@ -87,6 +89,12 @@ class ApiRepository {
         .flatMap(_articleToEntity);
   }
 
+  //用户登录
+  Observable<UserEntity> doLogin(String userName, String password) {
+    return Observable.fromFuture(_apiProvider.doLogin(userName, password))
+        .flatMap(_loginToEntity);
+  }
+
   _childrenToEntity(List<Children> findChildren) {
     List<FindEntity> children = [];
     for (var child in findChildren) {
@@ -147,5 +155,15 @@ class ApiRepository {
       }
     }
     return Observable.just(list);
+  }
+
+  Observable<UserEntity> _loginToEntity(value) {
+    UserEntity entity = new UserEntity();
+    if (value != null && value is UserResponse) {
+      entity.id = value.data.id;
+      entity.token = value.data.token;
+      entity.username = value.data.username;
+    }
+    return Observable.just(entity);
   }
 }
