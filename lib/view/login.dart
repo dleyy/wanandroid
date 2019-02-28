@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wanandroid/viewModel/login_viewModel.dart';
 import 'package:wanandroid/widget/net_loading_dialog.dart';
+import 'package:wanandroid/entity/login_entity.dart';
+import 'package:wanandroid/util/utils.dart';
+import 'package:wanandroid/res/constant.dart';
 
 class Login extends StatefulWidget {
 
@@ -75,9 +78,9 @@ class _LoginState extends State<Login> {
   _login() {
     if (userNameController.value.text.length < 6) {
       showSnackBar("用户名不能小于6位!");
-    }else if(passwordController.text.length==0){
+    } else if (passwordController.text.length == 0) {
       showSnackBar("密码不能为空!");
-    }else {
+    } else {
       showDialog(
           context: context,
           builder: (context) {
@@ -93,11 +96,23 @@ class _LoginState extends State<Login> {
   //这个func 就是关闭Dialog的方法
   _disMissCallBack(Function func) {
     _callBackFunction = (value) {
-      print(value);
-      showSnackBar("登录成功");
+      UserEntity entity;
+      if (value is UserEntity)
+        entity = value;
+      print("cccc===${entity!=null}=====${entity.username}");
+      if (entity != null && entity.username != null) {
+        showSnackBar("登录成功");
+        Utils.save(Strings.login_name_key, entity.username);
+        Utils.save(Strings.login_state_key, true);
+      } else {
+        showSnackBar("用户名或密码错误");
+      }
       func();
     };
-    _loginViewModel.doLogin("123abc", "123456", _callBackFunction);
+    _loginViewModel.doLogin(
+        userNameController.text,
+        passwordController.text,
+        _callBackFunction);
   }
 
   _register() {
@@ -106,7 +121,7 @@ class _LoginState extends State<Login> {
 
   Widget _returnSnackBar(String content) {
     return SnackBar(
-      content: Text(content,style: TextStyle(fontSize:17),),
+      content: Text(content, style: TextStyle(fontSize: 17),),
       duration: const Duration(milliseconds: 1000),
     );
   }

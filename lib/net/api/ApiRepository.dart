@@ -111,7 +111,7 @@ class ApiRepository {
     List<HomeArticleEntity> lists = [];
     if (article == null) {
 
-    } else if (article is HomeArticle) {
+    } else if (article is HomeArticle && article.data != null) {
       for (var _ in article.data.datas) {
         HomeArticleEntity entity = new HomeArticleEntity();
         entity.courseId = _.courseId;
@@ -132,7 +132,7 @@ class ApiRepository {
     List<BannerEntity> banners = new List();
     if (banner == null) {
 
-    } else if (banner is BannerResponse) {
+    } else if (banner is BannerResponse && banner.data != null) {
       for (var item in banner.data) {
         BannerEntity entity = new BannerEntity();
         entity.articleUrl = item.url;
@@ -146,7 +146,7 @@ class ApiRepository {
 
   Observable<List<HotKeyEntity>> _hotKeyToEntity(value) {
     List<HotKeyEntity> list = new List();
-    if (value != null && value is GroomResponse) {
+    if (value != null && value is GroomResponse && value.data != null) {
       for (var item in value.data) {
         HotKeyEntity entity = new HotKeyEntity();
         entity.name = item.name;
@@ -159,7 +159,7 @@ class ApiRepository {
 
   Observable<UserEntity> _loginToEntity(value) {
     UserEntity entity = new UserEntity();
-    if (value != null && value is UserResponse) {
+    if (value != null && value is UserResponse && value.data != null) {
       entity.id = value.data.id;
       entity.token = value.data.token;
       entity.username = value.data.username;

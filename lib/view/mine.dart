@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'package:wanandroid/util/utils.dart';
+import 'package:wanandroid/res/constant.dart';
 
 class MinePage extends StatefulWidget {
 
@@ -12,11 +14,13 @@ class _MineState extends State<MinePage> {
 
   List<String> _options;
   bool _loginState;
+  String _loginName;
 
   @override
   void initState() {
-    _options = ["我的收藏", "我的收藏", "我的收藏", "我的收藏"];
+    _options = ["我的收藏", "退出登录"];
     _loginState = false;
+    _getLoginState();
     super.initState();
   }
 
@@ -30,6 +34,7 @@ class _MineState extends State<MinePage> {
 
 
   Widget _createItemBuilder(BuildContext context, int index) {
+    var _loginText = _loginState?"${_loginName}   已登录":"未登录";
     if (index == 0) {
       return new Container(
         padding: EdgeInsets.only(top: 20,bottom: 20),
@@ -54,7 +59,7 @@ class _MineState extends State<MinePage> {
                                   .of(context)
                                   .style),
                           TextSpan(
-                              text: "${_loginState ? "已" : "未"}登录",
+                              text: _loginText,
                               style: TextStyle(
                                   color: _loginState ? Colors.blue : Colors.red,
                                   fontSize: 15.0))
@@ -88,10 +93,29 @@ class _MineState extends State<MinePage> {
 
   _itemMenuClicked(int index) {
     print(index);
+    switch(index){
+      case 0:
+        break;
+      case 1:
+        break;
+    }
   }
 
   _goToLogin() {
-    Navigator.of(context)
-        .push(new MaterialPageRoute(builder: (context)=>Login()));
+    if(!_loginState) {
+      Navigator.of(context)
+          .push(new MaterialPageRoute(builder: (context) => Login()));
+    }
+  }
+
+  _getLoginState() async{
+    bool isLogin = await Utils.get(Strings.login_state_key);
+    String loginName = await Utils.get(Strings.login_name_key);
+    if(isLogin){
+      setState(() {
+        _loginState = isLogin;
+        _loginName = loginName;
+      });
+    }
   }
 }

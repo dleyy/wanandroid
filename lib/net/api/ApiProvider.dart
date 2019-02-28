@@ -6,6 +6,8 @@ import 'package:wanandroid/model/find_response.dart';
 import 'package:wanandroid/model/banner_response.dart';
 import 'package:wanandroid/model/groom_response.dart';
 import 'package:wanandroid/model/user_response.dart';
+import 'package:wanandroid/util/utils.dart';
+import 'package:wanandroid/res/constant.dart';
 
 
 class ApiProvider {
@@ -20,19 +22,20 @@ class ApiProvider {
   static const String _registerUrl = "/user/register";
   static const String _logoutUrl = "/user/logout/json";
   static const String TAG = "dio========";
+  static const String _cookie_tag = "set-cookie";
 
   Dio _dio;
 
   ApiProvider() {
     Options options = new Options(
       baseUrl: _baseUrl,
-
     );
 
     _dio = Dio(options);
+
     DioLogger dioLogger = new DioLogger();
 
-    _dio.interceptor.request.onSend = (Options options) async {
+    _dio.interceptor.request.onSend = (Options options){
       dioLogger.onSend(TAG, options);
       return options;
     };
@@ -102,8 +105,10 @@ class ApiProvider {
     data.add("username", userName);
     data.add("password", password);
     var response = await _dio.post(_loginUrl, data: data);
-    List<String> cookie = response.headers["set-cookie"];
-    print("cookies======${cookie.length}====${cookie[0]}");
+    List<String> cookie = response.headers[_cookie_tag];
+    if (cookie != null && cookie.length > 0) {
+      Utils.save(Strings.login_cookie, cookie);
+    }
 
     UserResponse userResponse = UserResponse.fromJson(response.data);
     return userResponse;
