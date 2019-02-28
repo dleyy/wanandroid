@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'package:wanandroid/util/utils.dart';
 import 'package:wanandroid/res/constant.dart';
+import 'package:wanandroid/viewModel/logout_viewmodel.dart';
 
 class MinePage extends StatefulWidget {
 
@@ -11,6 +12,10 @@ class MinePage extends StatefulWidget {
 }
 
 class _MineState extends State<MinePage> {
+
+  LogoutViewModel _logoutViewModel = new LogoutViewModel();
+  var _Key = new GlobalKey<ScaffoldState>();
+
 
   List<String> _options;
   bool _loginState;
@@ -26,18 +31,21 @@ class _MineState extends State<MinePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListView.builder(
-      itemBuilder: _createItemBuilder,
-      itemCount: _options.length + 1,
+    return new Scaffold(
+        key: _Key,
+        body: new ListView.builder(
+          itemBuilder: _createItemBuilder,
+          itemCount: _options.length + 1,
+        )
     );
   }
 
 
   Widget _createItemBuilder(BuildContext context, int index) {
-    var _loginText = _loginState?"${_loginName}   已登录":"未登录";
+    var _loginText = _loginState ? "${_loginName}   已登录" : "未登录";
     if (index == 0) {
       return new Container(
-        padding: EdgeInsets.only(top: 20,bottom: 20),
+        padding: EdgeInsets.only(top: 20, bottom: 20),
         child: new Card(
             elevation: 5.0,
             child: new InkWell(
@@ -92,26 +100,67 @@ class _MineState extends State<MinePage> {
   }
 
   _itemMenuClicked(int index) {
-    print(index);
-    switch(index){
+    switch (index) {
       case 0:
         break;
       case 1:
+        if (_loginState) {
+          _showLogoutDialog();
+        } else {
+          Utils.showSnackBar("请先登录", _Key);
+        }
         break;
     }
   }
 
-  _goToLogin() {
-    if(!_loginState) {
-      Navigator.of(context)
+  _logout() {
+    Utils.remove(Strings.login_cookie);
+    Utils.remove(Strings.login_name_key);
+    Utils.remove(Strings.login_state_key);
+    _logoutViewModel.logout();
+    setState(() {
+      _loginState = false;
+      _loginName = "";
+    });
+  }
+
+  _showLogoutDialog() {
+    showDialog(context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return new AlertDialog(
+            title: new Text("退出登录"),
+            content: new Text("是否退出登录？"),
+            actions: <Widget>[
+              new FlatButton(onPressed: () {
+                Navigator.of(context).pop(false);
+              }, child: new Text("取消")),
+              new FlatButton(onPressed: () {
+                _logout();
+                Navigator.of(context).pop(true);
+              }, child: new Text("确定")),
+            ],
+          );
+        });
+  }
+
+  _goToLogin() async{
+    if (!_loginState) {
+     bool login = await Navigator.of(context)
           .push(new MaterialPageRoute(builder: (context) => Login()));
+     if(login){
+       setState(() {
+         _loginState = true;
+         _loginName = Utils.get(Strings.login_name_key);
+       });
+     }
     }
   }
 
-  _getLoginState() async{
+  _getLoginState() async {
     bool isLogin = await Utils.get(Strings.login_state_key);
     String loginName = await Utils.get(Strings.login_name_key);
-    if(isLogin){
+    if (isLogin) {
       setState(() {
         _loginState = isLogin;
         _loginName = loginName;

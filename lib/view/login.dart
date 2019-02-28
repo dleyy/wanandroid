@@ -4,6 +4,7 @@ import 'package:wanandroid/widget/net_loading_dialog.dart';
 import 'package:wanandroid/entity/login_entity.dart';
 import 'package:wanandroid/util/utils.dart';
 import 'package:wanandroid/res/constant.dart';
+import 'register.dart';
 
 class Login extends StatefulWidget {
 
@@ -99,11 +100,12 @@ class _LoginState extends State<Login> {
       UserEntity entity;
       if (value is UserEntity)
         entity = value;
-      print("cccc===${entity!=null}=====${entity.username}");
       if (entity != null && entity.username != null) {
         showSnackBar("登录成功");
         Utils.save(Strings.login_name_key, entity.username);
         Utils.save(Strings.login_state_key, true);
+        new Future.delayed(const Duration(milliseconds: 1500), () =>
+            Navigator.of(context).pop(true));
       } else {
         showSnackBar("用户名或密码错误");
       }
@@ -115,19 +117,18 @@ class _LoginState extends State<Login> {
         _callBackFunction);
   }
 
-  _register() {
-
+  _register() async {
+    String userName = await Navigator.of(context).push(
+        new MaterialPageRoute(builder: (context) => Register()));
+    setState(() {
+      userNameController.text = userName;
+      passwordController.text = "";
+    });
   }
 
-  Widget _returnSnackBar(String content) {
-    return SnackBar(
-      content: Text(content, style: TextStyle(fontSize: 17),),
-      duration: const Duration(milliseconds: 1000),
-    );
-  }
 
   showSnackBar(String msg) {
-    _scaffoldKey.currentState.showSnackBar(_returnSnackBar(msg));
+    Utils.showSnackBar(msg, _scaffoldKey);
   }
 
 }

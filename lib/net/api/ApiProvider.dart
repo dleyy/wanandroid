@@ -35,7 +35,7 @@ class ApiProvider {
 
     DioLogger dioLogger = new DioLogger();
 
-    _dio.interceptor.request.onSend = (Options options){
+    _dio.interceptor.request.onSend = (Options options) {
       dioLogger.onSend(TAG, options);
       return options;
     };
@@ -99,7 +99,7 @@ class ApiProvider {
     return article;
   }
 
-
+  //登录接口
   doLogin(String userName, String password) async {
     FormData data = new FormData();
     data.add("username", userName);
@@ -114,4 +114,24 @@ class ApiProvider {
     return userResponse;
   }
 
+  Future<bool> doLogout() async {
+    var response = await _dio.get(_logoutUrl);
+    bool result;
+    if (response.statusCode == 200) {
+      result = true;
+    }else{
+      result = false;
+    }
+    return result;
+  }
+  
+  doRegister(String userName,String password) async{
+    FormData data = new FormData();
+    data.add("username", userName);
+    data.add("password", password);
+    data.add("repassword", password);
+    var response = await _dio.post(_registerUrl, data: data);
+    UserResponse userResponse = UserResponse.fromJson(response.data);
+    return userResponse;
+  }
 }

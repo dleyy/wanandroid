@@ -95,6 +95,18 @@ class ApiRepository {
         .flatMap(_loginToEntity);
   }
 
+  //退出登录
+  Observable<bool> doLogout(){
+    return Observable.fromFuture(_apiProvider.doLogout());
+  }
+
+  //用户注册
+  Observable<dynamic> doRegister(String userName, String password) {
+    return Observable.fromFuture(_apiProvider.doRegister(userName, password))
+        .flatMap(_registerToEntity);
+  }
+
+
   _childrenToEntity(List<Children> findChildren) {
     List<FindEntity> children = [];
     for (var child in findChildren) {
@@ -166,4 +178,20 @@ class ApiRepository {
     }
     return Observable.just(entity);
   }
+
+  Observable<dynamic> _registerToEntity(value) {
+    UserEntity entity = new UserEntity();
+    if (value != null && value is UserResponse) {
+      if(value.data != null) {
+        entity.id = value.data.id;
+        entity.token = value.data.token;
+        entity.username = value.data.username;
+        return Observable.just(entity);
+      }else{
+        return Observable.just(value.errorMsg);
+      }
+    }
+
+  }
+
 }
