@@ -96,7 +96,7 @@ class ApiRepository {
   }
 
   //退出登录
-  Observable<bool> doLogout(){
+  Observable<bool> doLogout() {
     return Observable.fromFuture(_apiProvider.doLogout());
   }
 
@@ -106,6 +106,22 @@ class ApiRepository {
         .flatMap(_registerToEntity);
   }
 
+  //获取收藏的列表集合
+  Observable<List<HomeArticleEntity>> getCollectionArticle(int currentPage) {
+    return Observable.fromFuture(
+        _apiProvider.getCollectList(currentPage))
+        .flatMap(_articleToEntity);
+  }
+
+  //收藏文章
+  Observable<bool> doCollect(int articleId) {
+    return Observable.fromFuture(_apiProvider.doCollect(articleId));
+  }
+
+  Observable<bool> unCollect(int articleId, int originId) {
+    return Observable.fromFuture(
+        _apiProvider.unCollectArticle(articleId, originId));
+  }
 
   _childrenToEntity(List<Children> findChildren) {
     List<FindEntity> children = [];
@@ -134,6 +150,8 @@ class ApiRepository {
         entity.author = _.author;
         entity.articleTitle = _.title.trim().toString();
         entity.link = _.link;
+        entity.id = _.id;
+        entity.originId = _.originId;
         lists.add(entity);
       }
     }
@@ -182,16 +200,15 @@ class ApiRepository {
   Observable<dynamic> _registerToEntity(value) {
     UserEntity entity = new UserEntity();
     if (value != null && value is UserResponse) {
-      if(value.data != null) {
+      if (value.data != null) {
         entity.id = value.data.id;
         entity.token = value.data.token;
         entity.username = value.data.username;
         return Observable.just(entity);
-      }else{
+      } else {
         return Observable.just(value.errorMsg);
       }
     }
-
   }
 
 }

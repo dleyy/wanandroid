@@ -105,6 +105,9 @@ class Datas extends Object {
   @JsonKey(name: 'origin')
   String origin;
 
+  @JsonKey(name: 'originId')
+  int originId;
+
   @JsonKey(name: 'projectLink')
   String projectLink;
 
@@ -149,6 +152,7 @@ class Datas extends Object {
     this.link,
     this.niceDate,
     this.origin,
+    this.originId,
     this.projectLink,
     this.publishTime,
     this.superChapterId,

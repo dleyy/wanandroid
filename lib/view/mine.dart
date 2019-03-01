@@ -3,6 +3,7 @@ import 'login.dart';
 import 'package:wanandroid/util/utils.dart';
 import 'package:wanandroid/res/constant.dart';
 import 'package:wanandroid/viewModel/logout_viewmodel.dart';
+import 'collect_list.dart';
 
 class MinePage extends StatefulWidget {
 
@@ -102,6 +103,8 @@ class _MineState extends State<MinePage> {
   _itemMenuClicked(int index) {
     switch (index) {
       case 0:
+        Navigator.of(context).push(
+            new MaterialPageRoute(builder: (context) => CollectList()));
         break;
       case 1:
         if (_loginState) {
@@ -144,16 +147,16 @@ class _MineState extends State<MinePage> {
         });
   }
 
-  _goToLogin() async{
+  _goToLogin() async {
     if (!_loginState) {
-     bool login = await Navigator.of(context)
+      bool login = await Navigator.of(context)
           .push(new MaterialPageRoute(builder: (context) => Login()));
-     if(login){
-       setState(() {
-         _loginState = true;
-         _loginName = Utils.get(Strings.login_name_key);
-       });
-     }
+      if (login) {
+        setState(() {
+          _loginState = true;
+          _loginName = Utils.get(Strings.login_name_key);
+        });
+      }
     }
   }
 

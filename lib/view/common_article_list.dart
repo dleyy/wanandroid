@@ -3,7 +3,7 @@ import 'package:wanandroid/widget/recycle_view.dart';
 import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/res/constant.dart';
 import 'article_detail.dart';
-
+import 'package:wanandroid/viewModel/collect_article_viewmodel.dart';
 
 //共有的 article 列表 widget
 // ignore: must_be_immutable
@@ -12,11 +12,13 @@ class CommonArticleList extends StatefulWidget {
   List<HomeArticleEntity> _list = new List();
   Function loadData;
   Function clearData;
+  bool showLoading;
 
-  CommonArticleList(this._list, this.loadData, this.clearData);
+  CommonArticleList(this._list, this.loadData,
+      this.clearData,[this.showLoading = true]);
 
   @override
-  State<StatefulWidget> createState() =>new _ArticleState();
+  State<StatefulWidget> createState() => new _ArticleState();
 
 }
 
@@ -26,17 +28,25 @@ class _ArticleState extends State<CommonArticleList>
   List<HomeArticleEntity> _list;
   static int _start_page = 0;
   int _currentPage = _start_page;
+  CollectArticleViewModel _viewModel;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     _list = widget._list;
+    _viewModel = new CollectArticleViewModel();
     super.initState();
   }
 
-@override
+  @override
   void didUpdateWidget(CommonArticleList oldWidget) {
     _list = widget._list;
     super.didUpdateWidget(oldWidget);
@@ -44,18 +54,34 @@ class _ArticleState extends State<CommonArticleList>
 
   @override
   Widget build(BuildContext context) {
-    return RecycleView<HomeArticleEntity>(
-      lists: _list,
-      loadMore: () {
-        _loadData(++_currentPage);
-      },
-      refresh: () {
-        _currentPage = _start_page;
-        _loadData(_currentPage);
-      },
-      itemCount: _list.length,
-      listBuilder: _createBuilder,
-    );
+    if (_list.length == 0&&!widget.showLoading) {
+      return new Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Text("暂无数据~")
+          ],
+        ),
+      );
+    } else {
+      return RecycleView<HomeArticleEntity>(
+        lists: _list,
+        loadMore: () {
+          _loadData(++_currentPage);
+        },
+        refresh: () {
+          _currentPage = _start_page;
+          _loadData(_currentPage);
+        },
+        itemCount: _list.length,
+        listBuilder: _createBuilder,
+      );
+    }
   }
 
   Widget _createBuilder(BuildContext context, int index) {
@@ -135,7 +161,9 @@ class _ArticleState extends State<CommonArticleList>
                       flex: 1,
                       child: IconButton(
                         icon: Icon(Icons.favorite_border),
-                        color: article.collect ? Colors.red : Colors.black,
+                        color: (article.collect == null || article.collect)
+                            ? Colors.red
+                            : Colors.black,
                         onPressed: () => _collect(article.courseId, index),
                       ),
                     )
@@ -146,9 +174,36 @@ class _ArticleState extends State<CommonArticleList>
   }
 
   _collect(int courseId, int index) {
-    setState(() {
-      _list[index].collect = !_list[index].collect;
-    });
+    int articleId = _list[index].id;
+    int originId = _list[index].originId;
+    if (_list[index].collect == null) {
+      _unCollect(articleId, originId, index);
+    } else {
+      if (!_list[index].collect) {
+        _doCollect(articleId, index);
+      } else {
+        print("has collected");
+      }
+    }
+  }
+
+  _unCollect(int articleId, int originId, index) {
+    _viewModel.unCollect(articleId, originId,
+            () {
+          setState(() {
+            _list.removeAt(index);
+          });
+        }, () {
+          print("error");
+        });
+  }
+
+  _doCollect(int articleId, int index) {
+    _viewModel.doCollect(articleId, () {
+      setState(() {
+        _list[index].collect = true;
+      });
+    }, () {});
   }
 
   _itemClicked(int index) {
@@ -163,11 +218,12 @@ class _ArticleState extends State<CommonArticleList>
         }));
   }
 
-  _loadData(int currentPage) async{
+  _loadData(int currentPage) async {
     if (currentPage == _start_page && _list.isNotEmpty) {
       widget.clearData();
     }
     await widget.loadData(currentPage);
   }
+
 }
 

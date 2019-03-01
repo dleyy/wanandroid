@@ -6,4 +6,6 @@ class HomeArticleEntity {
   int courseId;
   List types;
   String times;
+  int id;
+  int originId;
 }
