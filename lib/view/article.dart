@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:wanandroid/entity/home_article_entity.dart';
 import 'package:wanandroid/view/article_detail.dart';
 import 'package:wanandroid/viewModel/banner_viewmodel.dart';
+import 'package:wanandroid/viewModel/collect_article_viewmodel.dart';
 import 'package:wanandroid/viewModel/home_article_viewmodel.dart';
 import 'package:wanandroid/widget/recycle_view.dart';
 import 'package:wanandroid/res/constant.dart';
 import 'package:wanandroid/widget/cycle_view.dart';
 import 'package:wanandroid/entity/banner_entity.dart';
-import 'common_article_list.dart';
+import 'package:wanandroid/util/utils.dart';
 
 class ArticlePage extends StatefulWidget {
   @override
@@ -24,14 +25,19 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   List<HomeArticleEntity> lists = [];
   List<BannerEntity> banners = [];
   HomeArticleViewModel _viewModel = HomeArticleViewModel();
+  CollectArticleViewModel _collectViewModel;
   BannerViewModel _bannerViewModel;
   int _currentPage = _initPageCount;
 
   ScrollController _scrollController = new ScrollController();
   bool _isPerformingRequest = false;
 
+  Key _scaffoldKey = new GlobalKey<ScaffoldState>();
+  bool _isLogin = false;
+
   @override
   void initState() {
+    _collectViewModel = new CollectArticleViewModel();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -50,12 +56,15 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
           _buildBanner(list);
         });
     _bannerViewModel.getBanners();
+
+    _getLoginState();
   }
 
   @override
   void dispose() {
     _viewModel.dispose();
     _bannerViewModel.dispose();
+    _collectViewModel.dispose();
     super.dispose();
   }
 
@@ -66,6 +75,7 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
       builder: (context, snap) {
         lists = snap.data != null ? snap.data : [];
         return Scaffold(
+          key: _scaffoldKey,
           body: RecycleView<HomeArticleEntity>(
             lists: lists,
             loadMore: () {
@@ -201,9 +211,25 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
   }
 
   _collect(int courseId, int index) {
-    setState(() {
-      lists[index].collect = !lists[index].collect;
-    });
+    if (_isLogin) {
+      int articleId = lists[index].id;
+      int originId = lists[index].originId;
+      if (!lists[index].collect) {
+        _doCollect(articleId, index);
+      } else {
+        Utils.showSnackBar("已经收藏了", _scaffoldKey);
+      }
+    } else {
+      Utils.showSnackBar("需要先登录", _scaffoldKey);
+    }
+  }
+
+  _doCollect(int articleId, int index) {
+    _collectViewModel.doCollect(articleId, () {
+      setState(() {
+        lists[index].collect = true;
+      });
+    }, () {});
   }
 
   _itemClicked(int index) {
@@ -227,5 +253,9 @@ class _Article extends State<ArticlePage> with AutomaticKeepAliveClientMixin {
 
   int _getRealIndex(int index) {
     return index - 1;
+  }
+
+  void _getLoginState() async {
+    _isLogin = await Utils.get(Strings.login_state_key) == null ? false : true;
   }
 }

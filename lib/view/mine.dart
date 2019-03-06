@@ -152,9 +152,10 @@ class _MineState extends State<MinePage> {
       bool login = await Navigator.of(context)
           .push(new MaterialPageRoute(builder: (context) => Login()));
       if (login) {
+        String _mLoginName = await Utils.get(Strings.login_name_key);
         setState(() {
           _loginState = true;
-          _loginName = Utils.get(Strings.login_name_key);
+          _loginName = _mLoginName;
         });
       }
     }
